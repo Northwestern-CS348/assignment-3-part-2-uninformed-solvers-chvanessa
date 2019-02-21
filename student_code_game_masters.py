@@ -34,6 +34,52 @@ class TowerOfHanoiGame(GameMaster):
             A Tuple of Tuples that represent the game state
         """
         ### student code goes here
+
+        # testies = parse_input('fact: (on ?x ?y)')
+        # print('am i doing this right')
+        # print(self.kb.kb_ask(testies))
+
+        lst1 = []
+        lst2 = []
+        lst3 = []
+        tuplst =[]
+
+        gs_facts = self.kb.facts
+        # print('the facts!', gs_facts)
+        for f in gs_facts:
+            # Handling "on" facts
+            pred = f.statement.predicate
+            t = f.statement.terms
+            if pred != 'on': pass
+            else:
+                dnum = int(str(t[0])[4]) # Had to convert the term into a string, then index
+                pnum = int(str(t[1])[3])
+                if pnum == 1:
+                    lst1.append(dnum)
+                if pnum == 2:
+                    lst2.append(dnum)
+                if pnum  == 3:
+                    lst3.append(dnum)
+        rep_lst = [lst1, lst2, lst3]
+
+        # some sort of sorting thing here
+        for l in rep_lst:
+            l.sort(reverse=False)
+            l = tuple(l)
+        for l in rep_lst:
+            tuplst.append(tuple(l))
+        ans = tuple(tuplst)
+        # print('DID I DO IT', ans)
+        return ans
+
+            # elif (pred == 'movable'):
+            #     for i, each in t:
+            #         print('name??', each)
+
+        # fact: (on disk1 peg1)
+        # fact: (on disk2 peg1)
+        # fact: (on disk3 peg1)
+
         pass
 
     def makeMove(self, movable_statement):
@@ -53,7 +99,34 @@ class TowerOfHanoiGame(GameMaster):
             None
         """
         ### Student code goes here
-        pass
+        if movable_statement.predicate != 'movable': print('sos something is wrong')
+        else:
+            [d,p1,p2] = movable_statement.terms
+            # askPegNumber = parse_input("fact: (is ?x peg)")
+            # term1 = Term(str(d))
+            # term2 = Term(str(p1))
+            # oldfact = Fact('on' + str(d) + str(p1))
+            # print('on ' + str(d) + ' ' + str(p1))
+            # print(oldfact)
+            # print(type(oldfact))
+            # print('before',self.kb.kb_ask(oldfact))
+            # self.kb.kb_retract(oldfact)
+            # print('after', self.kb.kb_ask(oldfact))
+
+            oldfact = parse_input("fact: (on " + str(d) + " " + str(p1) + ")")
+            # oldto = parse_input("fact: (on " + str(d) + " " + str(p1) + ")")
+
+            print('oh man oh man', oldfact)
+            self.kb.kb_retract(oldfact)
+
+            # Moved to second peg
+            new = parse_input("fact: (on " + str(d) + " " + str(p2) + ")")
+            self.kb.kb_assert(new)
+        return
+        # fact: (movable disk1 peg1 peg2)
+        # fact: (movable disk1 peg1 peg3)
+
+
 
     def reverseMove(self, movable_statement):
         """
@@ -100,7 +173,73 @@ class Puzzle8Game(GameMaster):
             A Tuple of Tuples that represent the game state
         """
         ### Student code goes here
-        pass
+
+        rep = [None] * 9
+        tuplst = []
+
+        tile_facts = self.kb.facts
+        print('the facts!', tile_facts)
+        for f in tile_facts:
+            # Handling "on" facts
+            pred = f.statement.predicate
+            t = f.statement.terms
+            if pred == 'movable':
+                tilenum = int(str(t[0])[4])  # Had to convert the term into a string, then index
+                xnum1 = int(str(t[1])[3])
+                ynum1 = int(str(t[2])[3])
+                xnum2 = int(str(t[3])[3])
+                ynum2 = int(str(t[4])[3])
+
+                # i = (ynum1 - 1) * 3 + (xnum1 - 1)
+                # rep[i] = tilenum
+
+                # if empty slot
+                ind = (ynum2 - 1) * 3 + (xnum2 - 1)
+                rep[ind] = -1
+            elif pred == 'posn':
+                tilenum = int(str(t[0])[4])
+                xnum1 = int(str(t[1])[3])
+                ynum1 = int(str(t[2])[3])
+
+                i = (ynum1 - 1) * 3 + (xnum1 - 1)
+                rep[i] = tilenum
+        print('what does it look like', rep)
+
+        tuplst = [tuple(rep[0:3]), tuple(rep[3:6]), tuple(rep[6:9])]
+        ans = tuple(tuplst)
+        print('this is my ans', ans)
+
+        return ans
+        # matrix format: [[? ? ?], [? ? ?], [? ? ?]]
+        # jk the real matrix format: [??? ??? ???]
+        # y * width + x
+
+        # some sort of sorting thing here
+        # for l in rep_lst:
+        #     tuplst.append(tuple(l))
+        # ans = tuple(tuplst)
+        # print('DID I DO IT', ans)
+        # return ans
+
+        # elif (pred == 'movable'):
+        #     for i, each in t:
+        #         print('name??', each)
+
+        # fact: (movable tile# xnum1 ynum1 xnum2 ynum2)
+        # fact: (movable tile4 pos2 pos1 pos3 pos1)
+        # fact: (movable tile8 pos3 pos2 pos3 pos1)
+
+        # fact: (posn tile5 pos1 pos1)
+        # fact: (posn tile4 pos2 pos1)
+        # fact: (posn tile6 pos1 pos2)
+        # fact: (posn tile1 pos2 pos2)
+        # fact: (posn tile8 pos3 pos2)
+        # fact: (posn tile7 pos1 pos1)
+        # fact: (posn tile3 pos2 pos3)
+        # fact: (posn tile2 pos3 pos3)
+
+        # ans should be
+        # ((5,4,-1),(6,1,8),(7,3,2)))
 
     def makeMove(self, movable_statement):
         """
