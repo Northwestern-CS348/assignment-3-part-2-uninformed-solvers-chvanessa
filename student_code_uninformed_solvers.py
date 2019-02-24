@@ -19,7 +19,8 @@ class SolverDFS(UninformedSolver):
             True if the desired solution state is reached, False otherwise
         """
         ### Student code goes here
-        return True
+
+
 
 
 class SolverBFS(UninformedSolver):

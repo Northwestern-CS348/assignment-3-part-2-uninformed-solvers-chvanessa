@@ -35,10 +35,6 @@ class TowerOfHanoiGame(GameMaster):
         """
         ### student code goes here
 
-        # testies = parse_input('fact: (on ?x ?y)')
-        # print('am i doing this right')
-        # print(self.kb.kb_ask(testies))
-
         lst1 = []
         lst2 = []
         lst3 = []
@@ -51,7 +47,7 @@ class TowerOfHanoiGame(GameMaster):
             pred = f.statement.predicate
             t = f.statement.terms
             if pred != 'on': pass
-            else:
+            else: # Looking at movable statements
                 dnum = int(str(t[0])[4]) # Had to convert the term into a string, then index
                 pnum = int(str(t[1])[3])
                 if pnum == 1:
@@ -60,6 +56,7 @@ class TowerOfHanoiGame(GameMaster):
                     lst2.append(dnum)
                 if pnum  == 3:
                     lst3.append(dnum)
+
         rep_lst = [lst1, lst2, lst3]
 
         # some sort of sorting thing here
@@ -71,10 +68,6 @@ class TowerOfHanoiGame(GameMaster):
         ans = tuple(tuplst)
         # print('DID I DO IT', ans)
         return ans
-
-            # elif (pred == 'movable'):
-            #     for i, each in t:
-            #         print('name??', each)
 
         # fact: (on disk1 peg1)
         # fact: (on disk2 peg1)
@@ -113,19 +106,38 @@ class TowerOfHanoiGame(GameMaster):
             # self.kb.kb_retract(oldfact)
             # print('after', self.kb.kb_ask(oldfact))
 
+            # Moved from initial peg
             oldfact = parse_input("fact: (on " + str(d) + " " + str(p1) + ")")
-            # oldto = parse_input("fact: (on " + str(d) + " " + str(p1) + ")")
-
-            print('oh man oh man', oldfact)
             self.kb.kb_retract(oldfact)
 
-            # Moved to second peg
-            new = parse_input("fact: (on " + str(d) + " " + str(p2) + ")")
-            self.kb.kb_assert(new)
+            # Remove onTopOf statement, fact: (onTopOf disk1 disk2)
+            # parseOTO = parse_input("fact: (onTopOf " + str(d) + "?disk_b)")
+            # match = self.kb.kb_ask(parseOTO)
+            # print(match)
+            # oldOTO = parse_input("fact: (onTopOf ")
+
+            # Moved to final peg
+            newon = parse_input("fact: (on " + str(d) + " " + str(p2) + ")")
+            self.kb.kb_assert(newon)
+
+            ### DID NOT CHANGE ONTOPOF FACTS
+
+            # Retract fact: (top d peg1)
+            oldtop = parse_input("fact: (top " + str(d) + " " + str(p1) + ")")
+            self.kb.kb_retract(oldtop)
+
+            # Add fact: (top d peg2)
+            newtop = parse_input("fact: (top " + str(d) + " " + str(p2) + ")")
+            self.kb.kb_assert(newtop)
+
+            # Retract from knowledge base if it was the case, fact: (empty ?peg_b)
+            checkemp = parse_input("fact: (empty " + str(p2) + ")")
+            if not self.kb.kb_ask(checkemp): pass
+            else: self.kb.kb_retract(checkemp)
         return
+
         # fact: (movable disk1 peg1 peg2)
         # fact: (movable disk1 peg1 peg3)
-
 
 
     def reverseMove(self, movable_statement):
@@ -178,36 +190,26 @@ class Puzzle8Game(GameMaster):
         tuplst = []
 
         tile_facts = self.kb.facts
-        print('the facts!', tile_facts)
+        # print('the facts!', tile_facts)
         for f in tile_facts:
             # Handling "on" facts
             pred = f.statement.predicate
             t = f.statement.terms
-            if pred == 'movable':
-                tilenum = int(str(t[0])[4])  # Had to convert the term into a string, then index
+            if pred == 'posn':
                 xnum1 = int(str(t[1])[3])
                 ynum1 = int(str(t[2])[3])
-                xnum2 = int(str(t[3])[3])
-                ynum2 = int(str(t[4])[3])
-
-                # i = (ynum1 - 1) * 3 + (xnum1 - 1)
-                # rep[i] = tilenum
-
-                # if empty slot
-                ind = (ynum2 - 1) * 3 + (xnum2 - 1)
-                rep[ind] = -1
-            elif pred == 'posn':
-                tilenum = int(str(t[0])[4])
-                xnum1 = int(str(t[1])[3])
-                ynum1 = int(str(t[2])[3])
-
                 i = (ynum1 - 1) * 3 + (xnum1 - 1)
-                rep[i] = tilenum
+                if str(t[0]) == 'empty':
+                    rep[i] = -1
+                else:
+                    tilenum = int(str(t[0])[4])
+                    rep[i] = tilenum
+
         print('what does it look like', rep)
 
         tuplst = [tuple(rep[0:3]), tuple(rep[3:6]), tuple(rep[6:9])]
         ans = tuple(tuplst)
-        print('this is my ans', ans)
+        # print('this is my ans', ans)
 
         return ans
         # matrix format: [[? ? ?], [? ? ?], [? ? ?]]
@@ -258,7 +260,54 @@ class Puzzle8Game(GameMaster):
             None
         """
         ### Student code goes here
-        pass
+
+        if movable_statement.predicate != 'movable': print('Not an acceptable movable statement')
+        else:
+            t = movable_statement.terms
+            tilenum = int(str(t[0])[4])  # Had to convert the term into a string, then index
+            # fact: (movable tile# xnum1 ynum1 xnum2 ynum2)
+            xnum1 = int(str(t[1])[3])
+            ynum1 = int(str(t[2])[3])
+            xnum2 = int(str(t[3])[3])
+            ynum2 = int(str(t[4])[3])
+
+            tile = str(t[0])
+            x1 = str(t[1])
+            y1 = str(t[2])
+            x2 = str(t[3])
+            y2 = str(t[4])
+
+            # Moved to slot is no longer empty
+            # oldmov = parse_input("fact: (" + str(movable_statement) + ")")
+            # self.kb.kb_retract(oldmov)  # is this correct syntax
+            oldposn = parse_input("fact: (posn " + tile + " " + x1 + " " + y1 + ")")
+            self.kb.kb_retract(oldposn)
+
+            # Assert the reverse movable statement
+            # newmov = parse_input("fact: (movable " + tile + " " + x2 + " " + y2 +  " " + x1 + " " + y1  + ")")
+            # print('new mov:', newmov)
+            # self.kb.kb_assert(newmov)
+            newposn = parse_input("fact: (posn " + tile + " " + x2 + " " + y2 + ")")
+            # print('new position', newposn)
+            self.kb.kb_assert(newposn)
+
+            oldemp = parse_input("fact: (posn empty " + x2 + " " + y2 + ")")
+            self.kb.kb_retract(oldemp)
+
+            newemp = parse_input("fact: (posn empty " + x1 + " " + y1 + ")")
+            self.kb.kb_assert(newemp)
+
+            # i = (ynum1 - 1) * 3 + (xnum1 - 1)
+            # rep[i] = tilenum
+
+        # if empty slot
+        # ind = (ynum2 - 1) * 3 + (xnum2 - 1)
+        # rep[ind] = -1
+
+        # need to add adjacency rules -- if u move it towards the center then now 3 tiles can now move into the empty slot
+        # need to adjust for this
+        # fact: (posn tile0 pos3 pos1)
+
 
     def reverseMove(self, movable_statement):
         """

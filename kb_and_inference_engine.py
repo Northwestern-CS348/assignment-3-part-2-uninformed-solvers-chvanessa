@@ -175,6 +175,7 @@ class KnowledgeBase(object):
         else:
             print('Not a fact, not removed: %s' % (fact))
 
+
 class InferenceEngine(object):
     def fc_infer(self, fact, rule, kb):
         """Forward-chaining to infer new facts and rules
