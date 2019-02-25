@@ -46,8 +46,7 @@ class TowerOfHanoiGame(GameMaster):
             # Handling "on" facts
             pred = f.statement.predicate
             t = f.statement.terms
-            if pred != 'on': pass
-            else: # Looking at movable statements
+            if pred == 'on':
                 dnum = int(str(t[0])[4]) # Had to convert the term into a string, then index
                 pnum = int(str(t[1])[3])
                 if pnum == 1:
@@ -95,20 +94,10 @@ class TowerOfHanoiGame(GameMaster):
         if movable_statement.predicate != 'movable': print('sos something is wrong')
         else:
             [d,p1,p2] = movable_statement.terms
-            # askPegNumber = parse_input("fact: (is ?x peg)")
-            # term1 = Term(str(d))
-            # term2 = Term(str(p1))
-            # oldfact = Fact('on' + str(d) + str(p1))
-            # print('on ' + str(d) + ' ' + str(p1))
-            # print(oldfact)
-            # print(type(oldfact))
-            # print('before',self.kb.kb_ask(oldfact))
-            # self.kb.kb_retract(oldfact)
-            # print('after', self.kb.kb_ask(oldfact))
 
             # Remove old onTopOf statements, fact: (onTopOf disk1 disk2)
-            OTOtwo = parse_input("fact: (onTopOf " + str(d) + "disk2)")
-            OTOthree = parse_input("fact: (onTopOf " + str(d) + "disk3)")
+            OTOtwo = parse_input("fact: (onTopOf " + str(d) + " " + "disk2)")
+            OTOthree = parse_input("fact: (onTopOf " + str(d) + " " + "disk3)")
             if OTOtwo in self.kb.facts:
                 self.kb.kb_retract(OTOtwo)
             if OTOthree in self.kb.facts:
@@ -140,6 +129,7 @@ class TowerOfHanoiGame(GameMaster):
             newtuples = self.getGameState()
 
             for i, t in enumerate(newtuples):
+                # Add empty peg statements
                 if i == 0: which = "peg1"
                 if i == 1: which = "peg2"
                 if i == 2: which = "peg3"
@@ -148,18 +138,26 @@ class TowerOfHanoiGame(GameMaster):
                     self.kb.kb_assert(addemp)
                 # Add new OTO statements
                 elif len(t) == 2:
-                    peg_a = "peg" + str(t[0])
-                    peg_b = "peg" + str(t[1])
-                    addOTO = parse_input("fact: (onTopOf " + peg_a + " " + peg_b + ")")
+                    disk_a = "disk" + str(t[0])
+                    disk_b = "disk" + str(t[1])
+                    addOTO = parse_input("fact: (onTopOf " + disk_a + " " + disk_b + ")")
                     self.kb.kb_assert(addOTO)
+
+                    # Modifying the top
+                    newtop = parse_input("fact: (top " + disk_a + " " + which + ")")
+                    self.kb.kb_assert(newtop)
                 elif len(t) ==3:
-                    peg_a = "peg" + str(t[0])
-                    peg_b = "peg" + str(t[1])
-                    peg_c = "peg" + str(t[2])
-                    addOTO = parse_input("fact: (onTopOf " + peg_a + " " + peg_b + ")")
-                    addOTO2 = parse_input("fact: (onTopOf " + peg_b + " " + peg_c + ")")
+                    disk_a = "disk" + str(t[0])
+                    disk_b = "disk" + str(t[1])
+                    disk_c = "disk" + str(t[2])
+                    addOTO = parse_input("fact: (onTopOf " + disk_a + " " + disk_b + ")")
+                    addOTO2 = parse_input("fact: (onTopOf " + disk_b + " " + disk_c + ")")
                     self.kb.kb_assert(addOTO)
                     self.kb.kb_assert(addOTO2)
+
+                    # Modifying the top
+                    newtop = parse_input("fact: (top " + disk_a + " " + which + ")")
+                    self.kb.kb_assert(newtop)
 
         return
 

@@ -20,69 +20,71 @@ class SolverDFS(UninformedSolver):
         """
         ### Student code goes here
 
-        currGS = self.currentState  # game state object, not the tuple
+        # currGS = self.currentState  # game state object, not the tuple
+        self.visited[self.currentState] = True
+        print('what is currstate', self.currentState.state)
+        print('is it visted', self.visited[self.currentState])
 
-        if currGS.state == self.victoryCondition : return True
+
+        if self.currentState.state == self.victoryCondition: return True
         else:
-            print('is this where i die')
-            # set up to explore possible moves
-            lom = self.gm.getMovables() # list of movable statements
-            d = self.currentState.depth
-            print('\nmoves??', lom)
+            # currGS.children should return a list of GS objects, if empty it means this node is not expanded
+            if self.currentState.children == []:
+                # Need to check if there are no longer any movables
+                lom = self.gm.getMovables()
+                d = self.currentState.depth
+                # print('\nlist of movables', lom)
+                if lom is not []:
+                    for m in lom:
+                        # Make the move, then create new game states and if not visited, save as children
+                        self.gm.makeMove(m)
+                        childState = GameState(self.gm.getGameState(), d + 1, m)
+                        self.gm.reverseMove(m)
 
-            tovisit = []
+                        if childState not in self.visited:
+                            self.visited[childState] = False # Set as False, to be visited
+                        childState.parent = self.currentState
+                        self.currentState.children.append(childState)
 
-            # need to check if there are no longer any movables
-            if not lom:
-                gobackmove = self.currentState.requiredMovable
-                if gobackmove: #if this exists
-                    self.gm.reverseMove(gobackmove)
-                    self.currentState = self.currentState.parent  # is this legal
-                    # self.currentState.depth -= 1
+                        print('\nHow many children', len(self.currentState.children))
+                        print('Child state', childState.state)
+                        print('Depth', childState.depth)
+                        print('Visited?', self.visited[childState],'\n')
 
-            for m in lom:
-                # Make the move, then create new game states and if not visited, save as children
-                self.gm.makeMove(m)
-                childState = GameState(self.currentState, d+1, m)
-                self.gm.reverseMove(m)
-                print('what is this?', self.visited)
-                print('a CS', childState)
-                print('is this a tuple', childState.state)
-                # if childState not in self.visited:
-
-                if self.visited[childState.state] == False:
-                    self.visited[childState.state] = False # wait should this be set as True or False for unvisited
-                    tovisit.append(childState)
-                    childState.parent = self.currentState
-                    self.gm.makeMove(m)
-                    self.currentState = childState
-                    # break
+                    self.solveOneStep()
+                    print('???')
+                    # return False
+                    # self.solveOneStep()
+                # If there are no movables, then reverse
                 else:
-                    if self.visited[childState.state] == True: # if has been visited, then go back up to parent node
-                        if currGS.requiredMovable:
-                            self.gm.reverseMove(currGS.requiredMovable)
-                            self.solveOneStep()
-
-            # self.currentState.children = tovisit
-            i = self.currentState.nextChildToVisit
-
-            for each in tovisit:
-                try:
-                    nextGS = tovisit[i]
-                except:
-                    # go back up parent
                     gobackmove = self.currentState.requiredMovable
                     self.gm.reverseMove(gobackmove)
-                    self.currentState = self.currentState.parent    # is this legal
+                    self.currentState = self.currentState.parent
+                    print('Go back, this is a move')
                     self.solveOneStep()
-
-                nextmove = nextGS.requiredMovable
-                self.gm.makeMove(nextmove)
-                self.visited[nextGS] = True #update that you have visited
-
-                if self.currentState.state == self.victoryCondition: return True
-                else: pass
-
+            # If there are already children for this node, means we have been here before, explore next node
+            else:
+                for child in self.currentState.children:
+                    if self.visited[child] == True: pass
+                    else:
+                        print('Making a move, is this the right child', child.state)
+                        nextmove = child.requiredMovable
+                        self.visited[child] = True
+                        self.gm.makeMove(nextmove)
+                        self.currentState = child #???
+                        print('Movables?',len(self.gm.getMovables()))
+                        print('here they are',self.gm.getMovables(), '\n')
+                        # print('Facts')
+                        # for f in self.gm.kb.facts:
+                        #     print(f)
+                        # print('\nend\n')
+                        if self.currentState.state == self.victoryCondition: return True
+                        else: return False # do i need to check vic condition again
+                # If they have all been explored
+                if self.currentState.requiredMovable:
+                    self.gm.reverseMove(self.currentState.requiredMovable)
+                    self.currentState = self.currentState.parent # unsure
+                    return False
 
 
 class SolverBFS(UninformedSolver):
