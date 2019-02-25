@@ -158,6 +158,39 @@ class TowerOfHanoiGame(GameMaster):
                     # Modifying the top
                     newtop = parse_input("fact: (top " + disk_a + " " + which + ")")
                     self.kb.kb_assert(newtop)
+                elif len(t) == 4:
+                    disk_a = "disk" + str(t[0])
+                    disk_b = "disk" + str(t[1])
+                    disk_c = "disk" + str(t[2])
+                    disk_d = "disk" + str(t[3])
+                    addOTO = parse_input("fact: (onTopOf " + disk_a + " " + disk_b + ")")
+                    addOTO2 = parse_input("fact: (onTopOf " + disk_b + " " + disk_c + ")")
+                    addOTO3 = parse_input("fact: (onTopOf " + disk_c + " " + disk_d + ")")
+                    self.kb.kb_assert(addOTO)
+                    self.kb.kb_assert(addOTO2)
+                    self.kb.kb_assert(addOTO3)
+
+                    # Modifying the top
+                    newtop = parse_input("fact: (top " + disk_a + " " + which + ")")
+                    self.kb.kb_assert(newtop)
+                elif len(t) == 5:
+                    disk_a = "disk" + str(t[0])
+                    disk_b = "disk" + str(t[1])
+                    disk_c = "disk" + str(t[2])
+                    disk_d = "disk" + str(t[3])
+                    disk_d = "disk" + str(t[4])
+                    addOTO = parse_input("fact: (onTopOf " + disk_a + " " + disk_b + ")")
+                    addOTO2 = parse_input("fact: (onTopOf " + disk_b + " " + disk_c + ")")
+                    addOTO3 = parse_input("fact: (onTopOf " + disk_c + " " + disk_d + ")")
+                    addOTO4 = parse_input("fact: (onTopOf " + disk_d + " " + disk_e + ")")
+                    self.kb.kb_assert(addOTO)
+                    self.kb.kb_assert(addOTO2)
+                    self.kb.kb_assert(addOTO3)
+                    self.kb.kb_assert(addOTO4)
+
+                    # Modifying the top
+                    newtop = parse_input("fact: (top " + disk_a + " " + which + ")")
+                    self.kb.kb_assert(newtop)
 
         return
 

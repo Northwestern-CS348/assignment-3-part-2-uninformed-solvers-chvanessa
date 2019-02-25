@@ -236,51 +236,51 @@ class KBTest(unittest.TestCase):
         solver.solveOneStep()
         print('After third move', th.getGameState(), '\n')
 
-    def test10_DFS_Hanoi(self):
-        th = TowerOfHanoiGame()
-        th.read('hanoi_3_all_disks_on_peg_one.txt')
-        required = [
-            'fact: (movable disk1 peg3 peg1)',
-            'fact: (movable disk1 peg3 peg2)',
-        ]
-        th.setWinningCondition(required, 'hanoi_all_forbidden.txt')
-        self.assertFalse(th.isWon())
-
-        movables = th.getMovables()
-        # print('total movables', movables)
-
-        solver = SolverDFS(th, ((), (), (1, 2, 3)))
-
-        print('\nOriginal game state', th.getGameState())
-
-        print('\nCalling first step:')
-        solver.solveOneStep()
-        print('After first move', th.getGameState(),'\n')
-
-        print('\nCalling second step:')
-        solver.solveOneStep()
-        print('After second move', th.getGameState(),'\n')
-        solver.solveOneStep()
-        print('After third move', th.getGameState(), '\n')
-        solver.solveOneStep()
-        print('Fourth move', th.getGameState())
-        solver.solveOneStep()
-        print('Fifth move', th.getGameState())
-        solver.solveOneStep()
-        print('6 move', th.getGameState())
-        solver.solveOneStep()
-        print('7 move', th.getGameState())
-        solver.solveOneStep()
-        print('8 move', th.getGameState())
-        solver.solveOneStep()
-        print('10 move', th.getGameState())
-        solver.solveOneStep()
-        print('11 move', th.getGameState())
-        solver.solveOneStep()
-        print('12 move', th.getGameState())
-        solver.solveOneStep()
-        print('13 move', th.getGameState())
-
+    # def test10_DFS_Hanoi(self):
+    #     th = TowerOfHanoiGame()
+    #     th.read('hanoi_3_all_disks_on_peg_one.txt')
+    #     required = [
+    #         'fact: (movable disk1 peg3 peg1)',
+    #         'fact: (movable disk1 peg3 peg2)',
+    #     ]
+    #     th.setWinningCondition(required, 'hanoi_all_forbidden.txt')
+    #     self.assertFalse(th.isWon())
+    #
+    #     movables = th.getMovables()
+    #     # print('total movables', movables)
+    #
+    #     solver = SolverDFS(th, ((), (), (1, 2, 3)))
+    #
+    #     print('\nOriginal game state', th.getGameState())
+    #
+    #     print('\nCalling first step:')
+    #     solver.solveOneStep()
+    #     print('After first move', th.getGameState(),'\n')
+    #
+    #     print('\nCalling second step:')
+    #     solver.solveOneStep()
+    #     print('After second move', th.getGameState(),'\n')
+    #     solver.solveOneStep()
+    #     print('After third move', th.getGameState(), '\n')
+    #     solver.solveOneStep()
+    #     print('Fourth move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('Fifth move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('6 move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('7 move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('8 move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('10 move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('11 move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('12 move', th.getGameState())
+    #     solver.solveOneStep()
+    #     print('13 move', th.getGameState())
+    #
 
         # [13, ((1,), (), (2, 3))],
 

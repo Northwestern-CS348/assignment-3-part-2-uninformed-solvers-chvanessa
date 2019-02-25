@@ -22,8 +22,8 @@ class SolverDFS(UninformedSolver):
 
         # currGS = self.currentState  # game state object, not the tuple
         self.visited[self.currentState] = True
-        print('what is currstate', self.currentState.state)
-        print('is it visted', self.visited[self.currentState])
+        # print('what is currstate', self.currentState.state)
+        # print('is it visted', self.visited[self.currentState])
 
 
         if self.currentState.state == self.victoryCondition: return True
@@ -46,28 +46,24 @@ class SolverDFS(UninformedSolver):
                         childState.parent = self.currentState
                         self.currentState.children.append(childState)
 
-                        print('\nHow many children', len(self.currentState.children))
+                        print('\nChild number: ', len(self.currentState.children))
                         print('Child state', childState.state)
                         print('Depth', childState.depth)
                         print('Visited?', self.visited[childState],'\n')
 
-                    self.solveOneStep()
-                    print('???')
-                    # return False
-                    # self.solveOneStep()
                 # If there are no movables, then reverse
                 else:
                     gobackmove = self.currentState.requiredMovable
                     self.gm.reverseMove(gobackmove)
                     self.currentState = self.currentState.parent
                     print('Go back, this is a move')
-                    self.solveOneStep()
+                self.solveOneStep()
             # If there are already children for this node, means we have been here before, explore next node
             else:
                 for child in self.currentState.children:
                     if self.visited[child] == True: pass
                     else:
-                        print('Making a move, is this the right child', child.state)
+                        # print('Making a move, is this the right child', child.state)
                         nextmove = child.requiredMovable
                         self.visited[child] = True
                         self.gm.makeMove(nextmove)
